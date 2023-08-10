@@ -1,0 +1,15 @@
+{
+    "api": {
+      "url" : "https://recherche-entreprises.api.gouv.fr/search?code_postal=69001"
+    },
+    "database": {
+      "client": "mysql",
+      "host": "127.0.0.1",
+      "user": "root",
+      "password": "",
+      "name": "test_proux"
+    },
+    "request": {
+      "limit": 5
+    }
+}
