@@ -44,6 +44,19 @@ axios.get(url)
     // handle success
 
     response.data['results'].forEach(element => {
+
+      knex('siege')
+      .insert(
+        [
+          { 
+            adresse: element['siege']['adresse'] , 
+            code_postal: element['siege']['code_postal'], 
+            commune: element['siege']['commune'] 
+          }, 
+        ]
+      )
+      .then();
+
       knex('entreprise')
       .insert(
         [
@@ -52,9 +65,12 @@ axios.get(url)
             nom_complet: element['nom_complet'], 
             date_creation: element['date_creation'] 
           }, 
-        ]
+        ],
+        ['id']
       )
-      .then();
+      .then(function (id) {
+        console.log(id);
+      });
     });
     
   })
@@ -65,3 +81,18 @@ axios.get(url)
   .finally(function () {
     // always executed
   });
+
+
+  // knex(
+  //   // insert values clause
+  //   knex.raw('?? (??, ??, ??)', ['posts_authors', 'author_id', 'post_id', 'sort_order'])
+  // ).insert(
+  //   // select where not exists clause
+  //   knex.select(
+  //     knex.raw('?, ?, ?', [author_id, post_id, sort_order])
+  //   ).whereNotExists(
+  //     knex('posts_authors').select('id').where({ author_id, post_id: id })
+  //   )
+  // )
+
+  // insert into "posts_authors" ("author_id", "post_id", "sort_order") select '1', '123', 10 where not exists (select "id" from "posts_authors" where "author_id" = '1' and "post_id" = '123');
