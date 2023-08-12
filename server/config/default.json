@@ -1,6 +1,9 @@
 {
+    "server":{
+      "port": 3000
+    },
     "api": {
-      "url" : "https://recherche-entreprises.api.gouv.fr/search?code_postal=69001,54000,93000"
+      "url" : "https://recherche-entreprises.api.gouv.fr/search?code_postal=69001,54000,93000,20212,20214,68118"
     },
     "database": {
       "client": "mysql",

@@ -2,6 +2,7 @@ const config = require('config');
 const url = config.get('api.url');
 const database = config.get('database');
 const axios = require('axios').default;
+const lodash = require('lodash');
 
 //Init DB connection
 const knex = require('knex')({
@@ -14,64 +15,70 @@ const knex = require('knex')({
   }
 });
 
-knex.schema.hasTable('siege').then(function(exists) {
-  if (!exists) {
-    return knex.schema.createTable('siege', function(t) {
-       t.increments('id').primary();
-       t.text('adresse');
-       t.integer('code_postal');
-       t.integer('commune');
-    });
-  }
-});
-
-//Create tables if they don't exist
-knex.schema.hasTable('entreprise').then(function(exists) {
-  if (!exists) {
-    return knex.schema.createTable('entreprise', function(t) {
-      t.integer('siren').primary();
-      t.string('nom_complet', 200);
-      t.date('date_creation');
-      t.integer('siegeId');
-      t.foreign('siegeId').references('id').inTable('siege')
-    });
-  }
-});
-
-//Get society information
+//Get societies information and insert them into the database
 axios.get(url)
   .then(function (response) {
     // handle success
+    (async function(){
 
-    response.data['results'].forEach(element => {
+      await ManageDatabaseTables();
 
-      knex('siege')
-      .insert(
-        [
-          { 
-            adresse: element['siege']['adresse'] , 
-            code_postal: element['siege']['code_postal'], 
-            commune: element['siege']['commune'] 
-          }, 
-        ]
-      )
-      .then();
+      //Remove societies and his headquarter who are not return by the api anymore
+      let currentSocieties = await GetSocieties();
 
-      knex('entreprise')
-      .insert(
-        [
-          { 
-            siren: element['siren'] , 
-            nom_complet: element['nom_complet'], 
-            date_creation: element['date_creation'] 
-          }, 
-        ],
-        ['id']
-      )
-      .then(function (id) {
-        console.log(id);
-      });
-    });
+      for (let element of currentSocieties) {
+        let res = lodash.findIndex(response.data['results'], function(x) { return x['siren'] == element['siren']; }); 
+        
+        if(res == -1){
+          await knex('entreprise')
+          .del()
+          .where({
+            siren:element['siren']
+          });
+
+          await knex('etablissement')
+          .del()
+          .where({
+            entrepriseId:element['siren']
+          });
+        }
+      }
+      
+      //Insert new societies/headquarter or update existing one
+      for (let element of response.data['results']) {
+        await knex('etablissement')
+        .insert(
+          [
+            { 
+              siret: element['siege']['siret'], 
+              adresse: element['siege']['adresse'] , 
+              code_postal: element['siege']['code_postal'], 
+              commune: element['siege']['commune'],
+              est_siege: element['siege']['est_siege'],
+              entrepriseId: element['siren']
+            }, 
+          ]
+        )
+        .onConflict('siret')
+        .merge(['adresse', 'code_postal', 'commune']);
+  
+        //Insert element, if a conflict is detected, it will merge the data to update with possible new info.
+        await knex('entreprise')
+        .insert(
+          [
+            { 
+              siren: element['siren'], 
+              nom_complet: element['nom_complet'], 
+              date_creation: element['date_creation'],
+              siegeId: element['siege']['siret'],
+            }, 
+          ]
+        )
+        .onConflict('siren')
+        .merge(['siren', 'nom_complet', 'date_creation']);
+      }
+
+    })()
     
   })
   .catch(function (error) {
@@ -82,17 +89,43 @@ axios.get(url)
     // always executed
   });
 
+//Return all societies from database
+  async function GetSocieties(){
+    return await knex.select('siren')
+    .from('entreprise')
+  }
 
-  // knex(
-  //   // insert values clause
-  //   knex.raw('?? (??, ??, ??)', ['posts_authors', 'author_id', 'post_id', 'sort_order'])
-  // ).insert(
-  //   // select where not exists clause
-  //   knex.select(
-  //     knex.raw('?, ?, ?', [author_id, post_id, sort_order])
-  //   ).whereNotExists(
-  //     knex('posts_authors').select('id').where({ author_id, post_id: id })
-  //   )
-  // )
+//Create table if they don't exist
+  async function ManageDatabaseTables(){
+    //Create table etablissement if they don't exist
+    var etablissementExists = await knex.schema.hasTable('etablissement')
+    if (!etablissementExists) {
+      await knex.schema.createTable('etablissement', function(t) {
+        t.bigint('siret').primary();
+        t.text('adresse');
+        t.integer('code_postal');
+        t.integer('commune');
+        t.boolean('est_siege');
+        t.bigint('entrepriseId');
+      });
+    }
 
-  // insert into "posts_authors" ("author_id", "post_id", "sort_order") select '1', '123', 10 where not exists (select "id" from "posts_authors" where "author_id" = '1' and "post_id" = '123');
+    //Create table entreprise if they don't exist
+    var entrepriseExists = await knex.schema.hasTable('entreprise')
+    if (!entrepriseExists) {
+      await knex.schema.createTable('entreprise', function(t) {
+        t.bigint('siren').primary();
+        t.string('nom_complet', 200);
+        t.date('date_creation');
+        t.bigint('siegeId');
+        t.foreign('siegeId').references('siret').inTable('etablissement')
+      });
+    }
+
+    //Add foreign key constraint if etablissement table has just been created
+    if (!etablissementExists) {
+      await knex.schema.alterTable('etablissement', function(t) {
+        t.foreign('entrepriseId').references('siren').inTable('entreprise')
+      });
+    }
+  }
