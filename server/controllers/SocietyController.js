@@ -1,5 +1,7 @@
 const config = require('config');
 const database = config.get('database');
+const webapp = config.get('webapp');
+const puppeteer = require('puppeteer');
 const requestConfig = config.get('request');
 const {SocietiesResponseModel, SocietyResponseModel} = require('../models/SocietyResponseModel.js');
 const {ErrorResponseModel, SuccessResponseModel} = require('../models/ResultResponseModel.js');
@@ -68,4 +70,40 @@ module.exports = {
       ErrorResponseModel(response, "");
     }
   },
+
+  async getSocietyPagePdf(request, response) {
+    try {
+        // Create a browser instance
+        const browser = await puppeteer.launch({headless: "new"});
+
+        // Create a new page
+        const page = await browser.newPage();
+
+        // Website URL to export as pdf
+        const website_url = `${webapp.url}/${webapp.societyPath}/${request.params.id}`
+
+        // Open URL in current page
+        // We wait until there are no more than 0 network connections for at least 500ms by using the value networkidle0
+        await page.goto(website_url, { waitUntil: 'networkidle0' });
+
+        //To reflect CSS used for screens instead of print
+        await page.emulateMediaType('screen');
+
+        // Downlaod the PDF
+        const pdf = await page.pdf({
+          path: `societyPagePdf/${request.params.id}.pdf`,
+          printBackground: true,
+          format: 'A4',
+        });
+
+        // Close the browser instance
+        await browser.close();
+
+        response.download(`societyPagePdf/${request.params.id}.pdf`);
+        
+    } catch (error) {
+      console.error(error);
+      ErrorResponseModel(response, "");
+    }
+  }
 };

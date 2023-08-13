@@ -5,6 +5,10 @@
     "api": {
       "url" : "https://recherche-entreprises.api.gouv.fr/search?code_postal=69001,54000,93000,20212,20214,68118"
     },
+    "webapp":{
+      "url": "http://localhost:5173",
+      "societyPath": "entreprise"
+    },
     "database": {
       "client": "mysql",
       "host": "127.0.0.1",

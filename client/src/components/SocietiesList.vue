@@ -1,6 +1,7 @@
 RouterLink<script>
     import axios from 'axios'
     import { utilsMixin } from '../mixins/utilsMixin'
+    import { saveAs } from 'file-saver'
     import {NCard, NInput, NButton, NPagination, NSpin, NH3, NText, NH1} from 'naive-ui'
 
     export default {
@@ -10,6 +11,7 @@ RouterLink<script>
                 requestLimit : process.env.REQUEST_LIMIT,
                 apiUrl : process.env.API_SETTINGS.url,
                 societyRoute : process.env.API_SETTINGS.routes.society,
+                societyPagePdf : process.env.API_SETTINGS.routes.societyPagePdf,
                 inputValue: '',
                 showSpinner: false,
                 societies: [],
@@ -42,6 +44,20 @@ RouterLink<script>
                     .then((response) => {
                             this.societies = response.data.results.societies;
                             this.rowCount = response.data.results.rowCount;
+                        })
+                    .catch((error) => {
+                            console.log(error);
+                        })
+                    .finally(() => {
+                        this.showSpinner = false;
+                    });
+            },
+            async DownloadSocietyPdfPage(siren){
+                this.showSpinner = true;
+              
+                axios.get(`${this.apiUrl}/${this.societyPagePdf}/${siren}`, { responseType: 'blob' })
+                    .then((response) => {
+                        saveAs(response.data, `${siren}.pdf`);
                         })
                     .catch((error) => {
                             console.log(error);
@@ -107,11 +123,14 @@ RouterLink<script>
             </div>
 
             <template #footer>
-                <RouterLink :to="{name:'society', params:{siren: society.siren}}">
+                <RouterLink :to="{name:'entreprise', params:{siren: society.siren}}">
                     <n-button type="info" color="#2248b6" size="large">
                         Détails
                     </n-button>
-                </RouterLink>               
+                </RouterLink>     
+                <n-button type="error" size="large" @click="DownloadSocietyPdfPage(society.siren)">
+                        Télécharger la fiche
+                </n-button>          
             </template>
         </n-card>
     </div>
@@ -122,6 +141,14 @@ RouterLink<script>
 <style>
     .n-card__footer{
         padding-top: 20px!important;
+    }
+
+    .n-base-loading.n-spin{
+        --n-color: #2248b6!important;
+    }
+
+    .n-spin{
+        bottom : -180px !important;
     }
     
     .n-card__content div{
@@ -176,6 +203,8 @@ RouterLink<script>
 
     .n-button{
         border-radius: 5px;
+        width: 100%;
+        margin: 5px 0;
     }
 
     .n-button *{
