@@ -51,6 +51,8 @@ axios.get(url)
             { 
               siret: element['siege']['siret'], 
               adresse: element['siege']['adresse'] , 
+              latitude: element['siege']['latitude'] , 
+              longitude: element['siege']['longitude'] , 
               code_postal: element['siege']['code_postal'], 
               commune: element['siege']['commune'],
               est_siege: element['siege']['est_siege'],
@@ -102,6 +104,8 @@ axios.get(url)
       await knex.schema.createTable('etablissement', function(t) {
         t.bigint('siret').primary();
         t.text('adresse');
+        t.text('latitude');
+        t.text('longitude');
         t.integer('code_postal');
         t.integer('commune');
         t.boolean('est_siege');

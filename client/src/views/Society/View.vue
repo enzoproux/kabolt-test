@@ -42,9 +42,11 @@
 
 
 <template>
-     <n-h1> {{ this.society.socialName }} </n-h1>
+     <div class="infoSocietyheader">
+        <n-h1 style="color:white;"> {{ this.society.socialName }} </n-h1>
+     </div>
 
-    <img src="https://picsum.photos/1000/300" style="margin-bottom:50px">
+    <img src="https://picsum.photos/1000/300" class="societyImage">
 
     <div style="text-align: center;">
         <n-divider title-placement="center">
@@ -69,7 +71,8 @@
         <br>
         {{ this.headquarter.town }}
         <br> <br><br>
-        <img :src="`https://maps.googleapis.com/maps/api/staticmap?center=${this.headquarter.address},CA&zoom=16&size=2000x1000&key=${this.googleMapKey}`">
+        <img :src="`https://maps.googleapis.com/maps/api/staticmap?center=${this.headquarter.latitude},${this.headquarter.longitude}&zoom=16&size=2000x1000&
+markers=color:blue%7Clabel:%7C${this.headquarter.latitude},${this.headquarter.longitude}&key=${this.googleMapKey}`">
    </div>
 
 
@@ -86,6 +89,17 @@
 </style>
 
 <style scoped>
+    .infoSocietyheader{
+        background-color: #2248b6;
+        padding: 80px 0 50px 0;
+        margin-bottom: 80px;
+    }
+
+    .societyImage{
+        margin: 0 auto 50px auto;
+        display: block;
+    }
+    
     @media screen and (max-width: 1100px) {
         img {
             width: 100%;

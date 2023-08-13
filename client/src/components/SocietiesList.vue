@@ -1,7 +1,7 @@
 RouterLink<script>
     import axios from 'axios'
     import { utilsMixin } from '../mixins/utilsMixin'
-    import {NCard, NInput, NButton, NPagination, NSpin, NH3, NText} from 'naive-ui'
+    import {NCard, NInput, NButton, NPagination, NSpin, NH3, NText, NH1} from 'naive-ui'
 
     export default {
         mixins: [utilsMixin],
@@ -65,19 +65,31 @@ RouterLink<script>
             NPagination,
             NSpin,
             NH3,
-            NText
+            NText,
+            NH1
         }
     }
 </script>
 
 <template>
-    <n-input v-model:value="this.inputValue" @keyup="() => { this.inputValue === '' ? getSocieties() : getSocietyByName() }" type="text" placeholder="Nom de l'entreprise"/>
+    <div class="searchBlock">
+        <div style="text-align: center;">
+            <n-text strong style="margin: 0; color: white; font-size: 3rem;">
+                Recherche d'entreprises
+            </n-text>
+            <hr>  
+        </div>
+
+        <n-input v-model:value="this.inputValue" @keyup="() => { this.inputValue === '' ? getSocieties() : getSocietyByName() }" type="text" placeholder="Nom de l'entreprise"/>
+    
+        <n-h3 strong v-if="this.showSpinner == false && this.societies.length == 0" style="color: white;">
+            Aucune société trouvée
+        </n-h3>
+    </div>
 
     <n-spin v-if="this.showSpinner" size="large" class="spin"/>
 
-    <n-h3 strong v-if="this.showSpinner == false && this.societies.length == 0">
-        Aucune société trouvée
-    </n-h3>
+   
 
     <div v-if="this.showSpinner == false && this.societies.length > 0" class="cardsContainer">
         <n-card :title="society.socialName" v-for="(society, index) in this.societies" :key="index">
@@ -135,17 +147,21 @@ RouterLink<script>
     }
 
     .n-input{
+        --n-text-color : white!important;
+        --n-placeholder-color : white!important;
         width: 40%!important; 
         margin: 40px auto;
         display: block;
+        background-color: transparent !important;
+        border: none!important;
     }
     .n-input, .n-input:focus, .n-input:active, .n-input:hover {
-        --n-border-hover: 1px solid #2248b6!important;
-        --n-border-focus: 1px solid #2248b6!important;
-        --n-loading-color: #2248b6!important;
+        --n-border-hover: 1px solid white!important;
+        --n-border-focus: 1px solid white!important;
+        --n-loading-color: white!important;
         box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px!important;
-        outline-color: #2248b6!important;
-        --n-caret-color: #2248b6!important;
+        outline-color: white!important;
+        --n-caret-color: white!important;
     }
 
     .n-card{
@@ -180,6 +196,15 @@ RouterLink<script>
 </style>
   
 <style scoped>
+    .searchBlock{
+        background-color: #2248b6;
+        padding: 80px 0 50px 0;
+    }
+
+    hr{
+        width: 20%; 
+        margin: 20px auto 50px auto;
+    }
 
     .cardsContainer{
         display: flex; 
@@ -197,7 +222,7 @@ RouterLink<script>
 
     @media screen and (max-width: 525px) {
         .n-input{
-            width: 100%!important; 
+            width: 90%!important; 
         }
     }
 </style>

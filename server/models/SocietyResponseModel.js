@@ -27,6 +27,8 @@ exports.SocietyResponseModel = societyResponseModel = (data) => {
             headquarter: {
                 siret: data[0].siret,
                 address: data[0].adresse,
+                latitude: data[0].latitude,
+                longitude: data[0].longitude,
                 postalCode: data[0].code_postal,
                 town: data[0].commune,
             }

@@ -57,7 +57,7 @@ module.exports = {
       let data = await knex('entreprise')
       .join('etablissement', 'entreprise.siegeId', 'etablissement.siret')
       .select('entreprise.siren', 'entreprise.nom_complet', 'entreprise.nom_raison_sociale' ,'entreprise.date_creation', 
-      'etablissement.siret', 'etablissement.commune', 'etablissement.adresse', 'etablissement.code_postal')
+      'etablissement.siret', 'etablissement.commune', 'etablissement.adresse', 'etablissement.latitude', 'etablissement.longitude', 'etablissement.code_postal')
       .where('etablissement.est_siege', true)
       .andWhere('entreprise.siren', request.params.id);
 
