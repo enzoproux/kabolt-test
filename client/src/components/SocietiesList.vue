@@ -52,7 +52,7 @@ RouterLink<script>
                         this.showSpinner = false;
                     });
             },
-            async DownloadSocietyPdfPage(siren){
+             DownloadSocietyPdfPage(siren){
                 this.showSpinner = true;
               
                 axios.get(`${this.apiUrl}/${this.societyPagePdf}/${siren}`, { responseType: 'blob' })
