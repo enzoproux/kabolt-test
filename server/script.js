@@ -20,7 +20,6 @@ axios.get(url)
   .then(function (response) {
     // handle success
     (async function(){
-
       await ManageDatabaseTables();
 
       //Remove societies and his headquarter who are not return by the api anymore
@@ -67,14 +66,15 @@ axios.get(url)
           [
             { 
               siren: element['siren'], 
-              nom_complet: element['nom_complet'], 
+              nom_complet: element['nom_complet'],
+              nom_raison_sociale: element['nom_raison_sociale'],
               date_creation: element['date_creation'],
               siegeId: element['siege']['siret'],
             }, 
           ]
         )
         .onConflict('siren')
-        .merge(['siren', 'nom_complet', 'date_creation']);
+        .merge(['siren', 'nom_complet', 'nom_raison_sociale', 'date_creation']);
       }
 
     })()
@@ -115,6 +115,7 @@ axios.get(url)
       await knex.schema.createTable('entreprise', function(t) {
         t.bigint('siren').primary();
         t.string('nom_complet', 200);
+        t.string('nom_raison_sociale', 200);
         t.date('date_creation');
         t.bigint('siegeId');
         t.foreign('siegeId').references('siret').inTable('etablissement')

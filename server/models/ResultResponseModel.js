@@ -2,7 +2,7 @@ successResponseModel = (res, data, statusCode, message) => {
     res.status(statusCode || 200).json({
     code: statusCode || 200,
     message: message || "success",
-    data: data || {}
+    results: data || {}
   });
  };
 
@@ -10,7 +10,7 @@ successResponseModel = (res, data, statusCode, message) => {
     res.status(statusCode || 500).json({
     code: statusCode || 500,
     message: message || "error",
-    data: data || {}
+    results: data || {}
   });
  };
 

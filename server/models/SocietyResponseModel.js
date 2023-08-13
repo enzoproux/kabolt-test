@@ -1,17 +1,18 @@
 exports.SocietiesResponseModel = societiesResponseModel = (data, rowCount) => {
-    let society = [];
+    let societies = [];
 
     data.forEach(element => {
-        society.push({
+        societies.push({
             siren: element.siren,
             name: element.nom_complet,
+            socialName: element.nom_raison_sociale,
             creationDate: element.date_creation
         })
     });
 
     return {
         
-        society: society,
+        societies: societies,
         rowCount: rowCount[0].total
     }
 }
@@ -21,6 +22,7 @@ exports.SocietyResponseModel = societyResponseModel = (data) => {
         society: {
             siren: data[0].siren,
             name: data[0].nom_complet,
+            socialName: data[0].nom_raison_sociale,
             creationDate: data[0].date_creation,
             headquarter: {
                 siret: data[0].siret,

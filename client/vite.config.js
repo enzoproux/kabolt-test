@@ -12,5 +12,17 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
+  },
+  define: {
+    "process.env.REQUEST_LIMIT": 5,
+    "process.env.GOOGLE_MAP": {
+      key: 'AIzaSyBj7y8wMdUSTch-jrk63CUf5BegUpRotHs'
+    },
+    "process.env.API_SETTINGS":{
+      url: 'http://localhost:3000',
+      routes: {
+        society : 'society' 
+      }
+    }
   }
 })

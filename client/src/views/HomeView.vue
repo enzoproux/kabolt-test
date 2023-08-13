@@ -14,13 +14,19 @@
   <main>
 
     <div style="text-align: center;">
-      <img src="https://kabolt.io/build/images/logo-white.e45b069f.svg" width="500" alt="kaboltLogo">
-      <n-h1 strong style="color:white; margin: 0;">
+      <n-h1 strong style="margin: 0;">
         Recherche d'entreprises
       </n-h1>
-      <hr style="width: 60%; margin: 50px auto 0 auto;">  
+      <hr>  
     </div>
 
     <SocietiesList />
   </main>
 </template>
+
+<style scoped>
+  hr{
+    width: 20%; 
+    margin: 20px auto 50px auto;
+  }
+</style>
