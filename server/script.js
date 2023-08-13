@@ -44,7 +44,7 @@ axios.get(url)
         }
       }
       
-      //Insert new societies/headquarter or update existing one
+      //Insert new societies/headquarter or update existing one if a conflict is detected
       for (let element of response.data['results']) {
         await knex('etablissement')
         .insert(
@@ -62,7 +62,6 @@ axios.get(url)
         .onConflict('siret')
         .merge(['adresse', 'code_postal', 'commune']);
   
-        //Insert element, if a conflict is detected, it will merge the data to update with possible new info.
         await knex('entreprise')
         .insert(
           [
@@ -97,7 +96,7 @@ axios.get(url)
 
 //Create table if they don't exist
   async function ManageDatabaseTables(){
-    //Create table etablissement if they don't exist
+    //Create table etablissement if doesn't exist
     var etablissementExists = await knex.schema.hasTable('etablissement')
     if (!etablissementExists) {
       await knex.schema.createTable('etablissement', function(t) {
@@ -110,7 +109,7 @@ axios.get(url)
       });
     }
 
-    //Create table entreprise if they don't exist
+    //Create table entreprise if doesn't exist
     var entrepriseExists = await knex.schema.hasTable('entreprise')
     if (!entrepriseExists) {
       await knex.schema.createTable('entreprise', function(t) {
