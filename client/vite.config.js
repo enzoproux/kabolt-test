@@ -21,6 +21,7 @@ export default defineConfig({
     "process.env.API_SETTINGS":{
       url: 'http://localhost:3000',
       routes: {
+        societies : 'entreprises',
         society : 'entreprise',
         societyPagePdf: 'entreprise/pdf'
       }

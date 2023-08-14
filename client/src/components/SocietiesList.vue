@@ -11,6 +11,7 @@ RouterLink<script>
                 requestLimit : process.env.REQUEST_LIMIT,
                 apiUrl : process.env.API_SETTINGS.url,
                 societyRoute : process.env.API_SETTINGS.routes.society,
+                societiesRoute : process.env.API_SETTINGS.routes.societies,
                 societyPagePdf : process.env.API_SETTINGS.routes.societyPagePdf,
                 inputValue: '',
                 showSpinner: false,
@@ -25,7 +26,7 @@ RouterLink<script>
             getSocieties(page = 1){
                 this.showSpinner = true;
 
-                axios.get(`${this.apiUrl}?page=${page}`)
+                axios.get(`${this.apiUrl}/${this.societiesRoute}?page=${page}`)
                     .then((response) => {
                             this.societies = response.data.results.societies;
                             this.rowCount = response.data.results.rowCount;
